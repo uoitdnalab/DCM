@@ -1,5 +1,0 @@
-Raspbian
-namespace
-Hadoop
-Indices
-datatables
