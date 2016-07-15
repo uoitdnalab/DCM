@@ -1,0 +1,173 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Cluster Deployment &mdash; DCM - Distributed Computing Middleware 0.01 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.01',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="top" title="DCM - Distributed Computing Middleware 0.01 documentation" href="index.html" />
+    <link rel="next" title="Benchmarking" href="benchmarking.html" />
+    <link rel="prev" title="Writing the master (front-end) program" href="master_program.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="benchmarking.html" title="Benchmarking"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="master_program.html" title="Writing the master (front-end) program"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">DCM - Distributed Computing Middleware 0.01 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="cluster-deployment">
+<h1>Cluster Deployment<a class="headerlink" href="#cluster-deployment" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul class="simple">
+</ul>
+</div>
+<p>Once both the master and slave programs have been written, the parallel
+computing system may now be deployed.</p>
+<div class="section" id="name-server">
+<h2>Name Server<a class="headerlink" href="#name-server" title="Permalink to this headline">¶</a></h2>
+<p>The first program which must be
+started is the Pyro Name Server. To do this, go to the computer which
+you have designated as being the name server (the one specified by the
+second argument in <tt class="xref py py-func docutils literal"><span class="pre">cluster.network_init()</span></tt>) and run the command
+<strong class="command">python -m Pyro4.naming &#8211;host IPADDRESS</strong> replacing IPADDRESS
+with the IP address of the computer running the name server.</p>
+</div>
+<div class="section" id="master-server">
+<h2>Master Server<a class="headerlink" href="#master-server" title="Permalink to this headline">¶</a></h2>
+<p>If the parallel computing system uses a master server (uses
+communicating LongTasks) then the master server is the next program
+which needs to be started. To start the master server run the command
+<strong class="command">python master_server.py &#8220;IFACE&#8221; &#8220;NAMESERVER_IP&#8221; &#8220;SERVERNAME&#8221;</strong>
+replacing IFACE, NAMESERVER_IP and SERVERNAME with the network
+interface name, name server IP address and master server name,
+respectively.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This command must be executed in the directory that contains master_server.py</p>
+</div>
+</div>
+<div class="section" id="slave-programs">
+<h2>Slave Programs<a class="headerlink" href="#slave-programs" title="Permalink to this headline">¶</a></h2>
+<p>The slave programs can now be started on each node in the cluster by
+running, on each node, the command
+<strong class="command">python cluster_starter.py SLAVE_PROGRAM &#8220;IFACE&#8221; &#8220;NAMESERVER_IP&#8221; &#8220;NODE_ID&#8221;</strong>
+replacing SLAVE_PROGRAM, IFACE, NAMESERVER_IP and NODE_ID with the slave
+program name (without the .py), network interface name,
+name server IP address and node ID, respectively.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">node IDs must be unique, numerical, begin at 1 and increment only by 1. For example; 1,2,3,4 is a valid sequence of node IDs while 3,4,7,8 is not.</p>
+</div>
+</div>
+<div class="section" id="master-program">
+<h2>Master Program<a class="headerlink" href="#master-program" title="Permalink to this headline">¶</a></h2>
+<p>The master program should already be written for the current cluster
+deployment so running it should be as simple as running the command
+<strong class="command">python MASTER_PROGRAM.py</strong> replacing MASTER_PROGRAM with the
+name of the master program.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Cluster Deployment</a><ul>
+<li><a class="reference internal" href="#name-server">Name Server</a></li>
+<li><a class="reference internal" href="#master-server">Master Server</a></li>
+<li><a class="reference internal" href="#slave-programs">Slave Programs</a></li>
+<li><a class="reference internal" href="#master-program">Master Program</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="master_program.html"
+                        title="previous chapter">Writing the master (front-end) program</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="benchmarking.html"
+                        title="next chapter">Benchmarking</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/cluster_deployment.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="benchmarking.html" title="Benchmarking"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="master_program.html" title="Writing the master (front-end) program"
+             >previous</a> |</li>
+        <li><a href="index.html">DCM - Distributed Computing Middleware 0.01 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, UOIT DNA Lab.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

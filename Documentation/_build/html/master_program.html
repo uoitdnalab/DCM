@@ -1,0 +1,638 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Writing the master (front-end) program &mdash; DCM - Distributed Computing Middleware 0.01 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.01',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="top" title="DCM - Distributed Computing Middleware 0.01 documentation" href="index.html" />
+    <link rel="next" title="Cluster Deployment" href="cluster_deployment.html" />
+    <link rel="prev" title="Writing the slave (back-end) program" href="slave_program.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="cluster_deployment.html" title="Cluster Deployment"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="slave_program.html" title="Writing the slave (back-end) program"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">DCM - Distributed Computing Middleware 0.01 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="writing-the-master-front-end-program">
+<h1>Writing the master (front-end) program<a class="headerlink" href="#writing-the-master-front-end-program" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul class="simple">
+</ul>
+</div>
+<div class="section" id="setup">
+<h2>Setup<a class="headerlink" href="#setup" title="Permalink to this headline">¶</a></h2>
+<p>All master programs must begin by importing <tt class="xref py py-mod docutils literal"><span class="pre">cluster</span></tt> into its own
+namespace.</p>
+<p>The first few lines of the master program should look like this.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!/usr/bin/env python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="kn">import</span> <span class="nn">cluster</span>
+</pre></div>
+</div>
+<p>After this, the <tt class="xref py py-func docutils literal"><span class="pre">cluster.network_init()</span></tt> function must called. The
+arguments are (network_interface, name server address, node_ID). The next
+bit of code will demonstrate starting a master program on &#8216;eth0&#8217; with a
+name server IP address of 192.168.137.1 and a node ID of 99.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">cluster</span><span class="o">.</span><span class="n">network_init</span><span class="p">(</span><span class="s">&#39;eth0&#39;</span><span class="p">,</span><span class="s">&#39;192.168.137.1&#39;</span><span class="p">,</span><span class="mi">99</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now, the task scheduler must be initialized. This is done by calling
+<tt class="xref py py-func docutils literal"><span class="pre">cluster.round_robin_init()</span></tt> with the number of slave processes running
+as its only argument. The following bit of code will set up a cluster
+with 3 slave processes.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#Initialize the task scheduler</span>
+<span class="n">cluster</span><span class="o">.</span><span class="n">round_robin_init</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="sequential-tasks">
+<h2>Sequential Tasks<a class="headerlink" href="#sequential-tasks" title="Permalink to this headline">¶</a></h2>
+<p>Tasks are executed sequentially (in series) by calling
+<tt class="xref py py-func docutils literal"><span class="pre">cluster.sequential_task()</span></tt> with the first argument being the name
+of the function that was made available to the API and the following
+arguments, the arguments for the function. The following code example
+would call the <tt class="xref py py-func docutils literal"><span class="pre">say_hello()</span></tt> function defined in the slave program
+with the arguments &#8220;John Smith&#8221; and 12.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">print</span> <span class="n">cluster</span><span class="o">.</span><span class="n">sequential_task</span><span class="p">(</span><span class="s">&#39;say_hello&#39;</span><span class="p">,</span><span class="s">&quot;John Smith&quot;</span><span class="p">,</span><span class="mi">12</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The function <tt class="xref py py-func docutils literal"><span class="pre">cluster.sequential_task()</span></tt> blocks until it returns
+output.</p>
+</div>
+<div class="section" id="concurrent-tasks">
+<h2>Concurrent Tasks<a class="headerlink" href="#concurrent-tasks" title="Permalink to this headline">¶</a></h2>
+<p>Tasks are executed concurrently (in parallel) by calling
+<tt class="xref py py-func docutils literal"><span class="pre">cluster.concurrent_task()</span></tt> with the first argument being the name
+of the function that was made available to the API, the second argument
+being a unique task identifier and the following arguments being the
+arguments for the function defined in the slave program. The following
+code example would call the <tt class="xref py py-func docutils literal"><span class="pre">say_hello()</span></tt> function defined in the
+slave program with a task ID of &#8220;t_1&#8221; and arguments &#8220;Mike&#8221; and 15.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">emp_node</span> <span class="o">=</span> <span class="n">cluster</span><span class="o">.</span><span class="n">concurrent_task</span><span class="p">(</span><span class="s">&#39;say_hello&#39;</span><span class="p">,</span><span class="s">&#39;t_1&#39;</span><span class="p">,</span><span class="s">&quot;Mike&quot;</span><span class="p">,</span><span class="mi">15</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Unlike <tt class="xref py py-func docutils literal"><span class="pre">cluster.sequential_task()</span></tt>, <tt class="xref py py-func docutils literal"><span class="pre">cluster.concurrent_task()</span></tt>
+will immediately return an object of the slave process doing the work.
+The program can then call <tt class="xref py py-func docutils literal"><span class="pre">cluster.wait_for_task()</span></tt> with the first
+argument being the task ID and the second argument being the slave
+process object. <tt class="xref py py-func docutils literal"><span class="pre">cluster.wait_for_task()</span></tt> will block until the task
+returns output. Finally to retrieve output from the task, the program
+must call <tt class="xref py py-func docutils literal"><span class="pre">cluster.get_output_from_task()</span></tt> with the first argument
+being the task ID and the second argument being the slave process
+object. This will return output from the function. The following code
+would start the task <tt class="xref py py-func docutils literal"><span class="pre">say_hello()</span></tt> with a task ID of &#8220;t_1&#8221; and
+arguments &#8220;Mike and 15. The program will then wait for the task to
+finish and then finally print out any output.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">emp_node</span> <span class="o">=</span> <span class="n">cluster</span><span class="o">.</span><span class="n">concurrent_task</span><span class="p">(</span><span class="s">&#39;say_hello&#39;</span><span class="p">,</span><span class="s">&#39;t_1&#39;</span><span class="p">,</span><span class="s">&quot;Mike&quot;</span><span class="p">,</span><span class="mi">15</span><span class="p">)</span>
+<span class="n">cluster</span><span class="o">.</span><span class="n">wait_for_task</span><span class="p">(</span><span class="s">&#39;t_1&#39;</span><span class="p">,</span><span class="n">emp_node</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">cluster</span><span class="o">.</span><span class="n">get_output_from_task</span><span class="p">(</span><span class="s">&#39;t_1&#39;</span><span class="p">,</span><span class="n">emp_node</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="concurrent-tasks-with-files">
+<h2>Concurrent Tasks with files<a class="headerlink" href="#concurrent-tasks-with-files" title="Permalink to this headline">¶</a></h2>
+<p>Sometimes a file needs to be transfered onto one node because a task
+executing on that node will need to read it. The API provides a
+function called <tt class="xref py py-func docutils literal"><span class="pre">cluster.concurrent_task_file()</span></tt> which is available
+to master programs which will copy a file onto the node which will
+execute the task. To use this function, the master program calls
+<tt class="xref py py-func docutils literal"><span class="pre">cluster.concurrent_task_file()</span></tt> with the first argument being
+the function name, the second argument being the task ID and the third
+argument being the file which is to be copied. All remaining arguments
+are passed directly to the slave task. The file on the master node is
+retrieved by name out of the <strong>shared_files</strong> directory and sent to the
+slave node into its <strong>received_shared_files</strong> directory. Files names are
+preserved. It is the responsibility of the slave program task which
+uses this file to open the file out of the <strong>recieved_shared_files</strong>
+directory and handle it appropriately.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">This method does not check if the file is currently being used on the slave node, so use with extreme care. It is possible to modify a file which is currently being read by a slave task.</p>
+</div>
+<p>The following function call would call <tt class="xref py py-func docutils literal"><span class="pre">hello_world()</span></tt> with a
+task ID of &#8220;t_1&#8221; and pass the file &#8220;example.txt&#8221; from the
+<strong>shared_files</strong> directory on the master node to the
+<strong>received_shared_files</strong> directory on the slave node.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">cluster</span><span class="o">.</span><span class="n">concurrent_task_file</span><span class="p">(</span><span class="s">&#39;hello_world&#39;</span><span class="p">,</span><span class="s">&#39;t_1&#39;</span><span class="p">,</span><span class="s">&#39;example.txt&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="longtasks">
+<h2>LongTasks<a class="headerlink" href="#longtasks" title="Permalink to this headline">¶</a></h2>
+<p>The final type of task which this API handles is a task where multiple
+slave process are working to solve a common problem and it is not known
+which one will be the first to obtain a solution. This is useful for
+implementing brute-force algorithms. There are two types of LongTasks -
+communicating and non-communicating.</p>
+<div class="section" id="non-communicating-longtasks">
+<h3>Non-Communicating LongTasks<a class="headerlink" href="#non-communicating-longtasks" title="Permalink to this headline">¶</a></h3>
+<p>Non-Communicating <tt class="xref py py-class docutils literal"><span class="pre">LongTasks</span></tt> do not notify a master server when
+they are done their task. To spawn a non-communicating LongTask from a
+master_program call <tt class="xref py py-func docutils literal"><span class="pre">cluster.start_long_task()</span></tt> with the first
+argument being the name of the function which builds the parallel
+processing object, the second argument being the LongTask ID and the
+remaining arguments being the usual arguments for the task. This
+function will immediately return a parallel processing object for the
+given task. The master program can then call
+<tt class="xref py py-func docutils literal"><span class="pre">cluster.stop_long_task()</span></tt> with the LongTask ID as the first
+argument and the parallel processing object as the second argument. This
+will signal the LongTask to stop. The master program then calls
+<tt class="xref py py-func docutils literal"><span class="pre">cluster.finish_long_task()</span></tt> with the LongTask ID as the first
+argument and the parallel processing object as the second argument. This
+function will block until the LongTask is terminated. The master program
+can then call <tt class="xref py py-func docutils literal"><span class="pre">cluster.long_task_has_output()</span></tt> with the LongTask ID
+as the first argument and the parallel processing object as the second
+argument. This will return <tt class="docutils literal"><span class="pre">True</span></tt> only if the parallel process was
+able to solve to problem. If there is a solution, the master program can
+call <tt class="xref py py-func docutils literal"><span class="pre">cluster.long_task_get_output()</span></tt> with the LongTask ID as the
+first argument and the parallel processing object
+as the second argument. This will return the solution from the task.
+Finally, the master program should call
+<tt class="xref py py-func docutils literal"><span class="pre">cluster.long_task_clean_up()</span></tt> with the LongTask ID as the first
+argument and the parallel processing object as the second argument once
+that specific LongTask is not going to be needed anymore. The following
+code example illustrates these ideas by trying for 5 seconds to solve a
+partial hash collision.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">emp_node</span> <span class="o">=</span> <span class="n">cluster</span><span class="o">.</span><span class="n">start_long_task</span><span class="p">(</span><span class="s">&#39;hashCollider&#39;</span><span class="p">,</span><span class="s">&#39;hash_collider_001&#39;</span><span class="p">,</span> <span class="s">&quot;I&#39;m at UOIT&quot;</span><span class="p">,</span><span class="mi">8</span><span class="p">)</span>
+<span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="c"># Kill the task but first let it run for 5 seconds</span>
+<span class="n">cluster</span><span class="o">.</span><span class="n">stop_long_task</span><span class="p">(</span><span class="s">&#39;hash_collider_001&#39;</span><span class="p">,</span><span class="n">emp_node</span><span class="p">)</span>
+<span class="n">cluster</span><span class="o">.</span><span class="n">finish_long_task</span><span class="p">(</span><span class="s">&#39;hash_collider_001&#39;</span><span class="p">,</span><span class="n">emp_node</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">cluster</span><span class="o">.</span><span class="n">long_task_has_output</span><span class="p">(</span><span class="s">&#39;hash_collider_001&#39;</span><span class="p">,</span><span class="n">emp_node</span><span class="p">):</span>
+        <span class="k">print</span> <span class="n">cluster</span><span class="o">.</span><span class="n">long_task_get_output</span><span class="p">(</span><span class="s">&#39;hash_collider_001&#39;</span><span class="p">,</span><span class="n">emp_node</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&quot;Sorry no output&quot;</span>
+<span class="c"># And clean up</span>
+<span class="n">cluster</span><span class="o">.</span><span class="n">long_task_clean_up</span><span class="p">(</span><span class="s">&#39;hash_collider_001&#39;</span><span class="p">,</span><span class="n">emp_node</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="communicating-longtasks">
+<h3>Communicating LongTasks<a class="headerlink" href="#communicating-longtasks" title="Permalink to this headline">¶</a></h3>
+<p>Communicating LongTasks are similar to Non-Communicating LongTasks
+except this time there is a <strong>master server</strong> which can receive a
+message from one task notifying that a solution has been found and that
+all other LongTasks in this group can be terminated. Before any
+communicating LongTasks can be spawned a connection to a
+<strong>master server</strong> must first be established. To do this call
+<tt class="xref py py-func docutils literal"><span class="pre">cluster.connect_to_server()</span></tt> with the name of the <strong>master server</strong>
+as its only argument. This will return an object representing the
+<strong>master server</strong>. Next, the <strong>master server</strong> must be aware of the
+group of workers attempting to solve a problem. To create this group,
+call <tt class="xref py py-func docutils literal"><span class="pre">master_server_object.create_task_group()</span></tt> with its only
+parameter being its group name. Parallel processes may now be spawned.
+To do so, call <tt class="xref py py-func docutils literal"><span class="pre">cluster.start_long_comm_task()</span></tt> with the first
+argument being the name of the function which builds the parallel
+processing object, the second argument being the LongTask ID, the third
+argument being the group name of workers and the remaining arguments
+being the usual arguments for the task itself. This function will return
+an object representing the parallel process. With these slave processes
+working at solving the problem, the master program must now wait for a
+solution. The master program calls
+<tt class="xref py py-func docutils literal"><span class="pre">master_server_object.wait_for_one()</span></tt> with its only argument being
+the group of workers which it must wait for. This function blocks until
+one worker from the group has solved the problem. After this, the
+program execution proceeds in the same manner as if it were a
+non-communicating task; <tt class="xref py py-func docutils literal"><span class="pre">cluster.stop_long_task()</span></tt> is called for
+each task, then, <tt class="xref py py-func docutils literal"><span class="pre">cluster.finish_long_task()</span></tt> is called for each
+task. After this, each worker is check for output with
+<tt class="xref py py-func docutils literal"><span class="pre">cluster.long_task_has_output()</span></tt> and any outputs are read with
+<tt class="xref py py-func docutils literal"><span class="pre">cluster.long_task_get_output()</span></tt>. Finally, everything is cleaned up
+by calling <tt class="xref py py-func docutils literal"><span class="pre">cluster.long_task_clean_up()</span></tt> for each worker. The
+following example uses communicating LongTasks to have multiple workers
+attempting to solve partial hash collisions for different strings and
+whichever solution is obtained first is displayed.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#First we will need a connection to our master server to know when one task is completed</span>
+<span class="n">master_server</span> <span class="o">=</span> <span class="n">cluster</span><span class="o">.</span><span class="n">connect_to_server</span><span class="p">(</span><span class="s">&quot;PyroMaster&quot;</span><span class="p">)</span>
+<span class="c">#Next we will need to inform the master server about our group of workers</span>
+<span class="n">master_server</span><span class="o">.</span><span class="n">create_task_group</span><span class="p">(</span><span class="s">&#39;miners&#39;</span><span class="p">)</span>
+<span class="c">#Now we can start working --- let&#39;s run multiple parallel tasks</span>
+<span class="n">emp_node_1</span> <span class="o">=</span> <span class="n">cluster</span><span class="o">.</span><span class="n">start_long_comm_task</span><span class="p">(</span><span class="s">&#39;talkingHashCollider&#39;</span><span class="p">,</span><span class="s">&#39;hash_collider_t1&#39;</span><span class="p">,</span> <span class="s">&#39;miners&#39;</span><span class="p">,</span> <span class="s">&quot;Hello from UOIT&quot;</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
+<span class="n">emp_node_2</span> <span class="o">=</span> <span class="n">cluster</span><span class="o">.</span><span class="n">start_long_comm_task</span><span class="p">(</span><span class="s">&#39;talkingHashCollider&#39;</span><span class="p">,</span><span class="s">&#39;hash_collider_t2&#39;</span><span class="p">,</span> <span class="s">&#39;miners&#39;</span><span class="p">,</span> <span class="s">&quot;Hello from ACE&quot;</span> <span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="n">emp_node_3</span> <span class="o">=</span> <span class="n">cluster</span><span class="o">.</span><span class="n">start_long_comm_task</span><span class="p">(</span><span class="s">&#39;talkingHashCollider&#39;</span><span class="p">,</span><span class="s">&#39;hash_collider_t3&#39;</span><span class="p">,</span> <span class="s">&#39;miners&#39;</span><span class="p">,</span> <span class="s">&quot;Hello from ENG&quot;</span> <span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="n">emp_node_4</span> <span class="o">=</span> <span class="n">cluster</span><span class="o">.</span><span class="n">start_long_comm_task</span><span class="p">(</span><span class="s">&#39;talkingHashCollider&#39;</span><span class="p">,</span><span class="s">&#39;hash_collider_t4&#39;</span><span class="p">,</span> <span class="s">&#39;miners&#39;</span><span class="p">,</span> <span class="s">&quot;Hello from ERC&quot;</span> <span class="p">,</span> <span class="mi">13</span><span class="p">)</span>
+
+
+<span class="c"># --- Wait until work is finished</span>
+<span class="n">master_server</span><span class="o">.</span><span class="n">wait_for_one</span><span class="p">(</span><span class="s">&#39;miners&#39;</span><span class="p">)</span>
+
+<span class="c"># --- As soon as the work is done kill all the unfinished tasks</span>
+<span class="n">cluster</span><span class="o">.</span><span class="n">stop_long_task</span><span class="p">(</span><span class="s">&#39;hash_collider_t1&#39;</span><span class="p">,</span><span class="n">emp_node_1</span><span class="p">)</span>
+<span class="n">cluster</span><span class="o">.</span><span class="n">finish_long_task</span><span class="p">(</span><span class="s">&#39;hash_collider_t1&#39;</span><span class="p">,</span><span class="n">emp_node_1</span><span class="p">)</span>
+<span class="n">cluster</span><span class="o">.</span><span class="n">stop_long_task</span><span class="p">(</span><span class="s">&#39;hash_collider_t2&#39;</span><span class="p">,</span><span class="n">emp_node_2</span><span class="p">)</span>
+<span class="n">cluster</span><span class="o">.</span><span class="n">finish_long_task</span><span class="p">(</span><span class="s">&#39;hash_collider_t2&#39;</span><span class="p">,</span><span class="n">emp_node_2</span><span class="p">)</span>
+<span class="n">cluster</span><span class="o">.</span><span class="n">stop_long_task</span><span class="p">(</span><span class="s">&#39;hash_collider_t3&#39;</span><span class="p">,</span><span class="n">emp_node_3</span><span class="p">)</span>
+<span class="n">cluster</span><span class="o">.</span><span class="n">finish_long_task</span><span class="p">(</span><span class="s">&#39;hash_collider_t3&#39;</span><span class="p">,</span><span class="n">emp_node_3</span><span class="p">)</span>
+<span class="n">cluster</span><span class="o">.</span><span class="n">stop_long_task</span><span class="p">(</span><span class="s">&#39;hash_collider_t4&#39;</span><span class="p">,</span><span class="n">emp_node_4</span><span class="p">)</span>
+<span class="n">cluster</span><span class="o">.</span><span class="n">finish_long_task</span><span class="p">(</span><span class="s">&#39;hash_collider_t4&#39;</span><span class="p">,</span><span class="n">emp_node_4</span><span class="p">)</span>
+
+
+
+<span class="c">#Now display our computed data</span>
+<span class="k">if</span> <span class="n">cluster</span><span class="o">.</span><span class="n">long_task_has_output</span><span class="p">(</span><span class="s">&#39;hash_collider_t1&#39;</span><span class="p">,</span><span class="n">emp_node_1</span><span class="p">):</span>
+        <span class="k">print</span> <span class="n">cluster</span><span class="o">.</span><span class="n">long_task_get_output</span><span class="p">(</span><span class="s">&#39;hash_collider_t1&#39;</span><span class="p">,</span><span class="n">emp_node_1</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&quot;Sorry no output&quot;</span>
+
+<span class="k">if</span> <span class="n">cluster</span><span class="o">.</span><span class="n">long_task_has_output</span><span class="p">(</span><span class="s">&#39;hash_collider_t2&#39;</span><span class="p">,</span><span class="n">emp_node_2</span><span class="p">):</span>
+        <span class="k">print</span> <span class="n">cluster</span><span class="o">.</span><span class="n">long_task_get_output</span><span class="p">(</span><span class="s">&#39;hash_collider_t2&#39;</span><span class="p">,</span><span class="n">emp_node_2</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&quot;Sorry no output&quot;</span>
+
+<span class="k">if</span> <span class="n">cluster</span><span class="o">.</span><span class="n">long_task_has_output</span><span class="p">(</span><span class="s">&#39;hash_collider_t3&#39;</span><span class="p">,</span><span class="n">emp_node_3</span><span class="p">):</span>
+        <span class="k">print</span> <span class="n">cluster</span><span class="o">.</span><span class="n">long_task_get_output</span><span class="p">(</span><span class="s">&#39;hash_collider_t3&#39;</span><span class="p">,</span><span class="n">emp_node_3</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&quot;Sorry no output&quot;</span>
+
+<span class="k">if</span> <span class="n">cluster</span><span class="o">.</span><span class="n">long_task_has_output</span><span class="p">(</span><span class="s">&#39;hash_collider_t4&#39;</span><span class="p">,</span><span class="n">emp_node_4</span><span class="p">):</span>
+        <span class="k">print</span> <span class="n">cluster</span><span class="o">.</span><span class="n">long_task_get_output</span><span class="p">(</span><span class="s">&#39;hash_collider_t4&#39;</span><span class="p">,</span><span class="n">emp_node_4</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&quot;Sorry no output&quot;</span>
+
+
+<span class="c">#And finally clean up</span>
+<span class="n">cluster</span><span class="o">.</span><span class="n">long_task_clean_up</span><span class="p">(</span><span class="s">&#39;hash_collider_t1&#39;</span><span class="p">,</span><span class="n">emp_node_1</span><span class="p">)</span>
+<span class="n">cluster</span><span class="o">.</span><span class="n">long_task_clean_up</span><span class="p">(</span><span class="s">&#39;hash_collider_t2&#39;</span><span class="p">,</span><span class="n">emp_node_2</span><span class="p">)</span>
+<span class="n">cluster</span><span class="o">.</span><span class="n">long_task_clean_up</span><span class="p">(</span><span class="s">&#39;hash_collider_t3&#39;</span><span class="p">,</span><span class="n">emp_node_3</span><span class="p">)</span>
+<span class="n">cluster</span><span class="o">.</span><span class="n">long_task_clean_up</span><span class="p">(</span><span class="s">&#39;hash_collider_t4&#39;</span><span class="p">,</span><span class="n">emp_node_4</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="broadcast-tasks">
+<h2>Broadcast Tasks<a class="headerlink" href="#broadcast-tasks" title="Permalink to this headline">¶</a></h2>
+<p>Broadcast tasks are procedures which are executed on all slave nodes in
+the network. Whenever a master program calls a <strong>broadcast task</strong>,
+the task is executed on all slave nodes. The execution is asynchronous -
+this call does not block. The call returns a list of nodes running the
+broadcast task. The master program may now use this list to wait for the
+broadcast task to finish and to get output from it. To implement a
+broadcast task, the task must first be created and exported in the slave
+program in the exact same way in which a concurrent task would be
+created and exported. The master program must then call
+<tt class="xref py py-func docutils literal"><span class="pre">cluster.broadcast_task()</span></tt> with the first argument being the
+exported name of the task and any remaining arguments being specific
+arguments for the function itself. The function will then return a list
+of nodes running the task. The master program may now call
+<tt class="xref py py-func docutils literal"><span class="pre">cluster.wait_for_broadcast_task()</span></tt> with its first and only argument
+being the list returned from <tt class="xref py py-func docutils literal"><span class="pre">cluster.broadcast_task()</span></tt>. This call
+will block until all slave nodes have finished the task.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">As of the current implementation, the master program should wait for all broadcast tasks to finish before attempting to start any new ones.</p>
+</div>
+<p>The master program may now call
+<tt class="xref py py-func docutils literal"><span class="pre">cluster.broadcast_task_get_data()</span></tt> with its first and only argument
+being the list returned from <tt class="xref py py-func docutils literal"><span class="pre">cluster.broadcast_task()</span></tt>. This will
+return a list of outputs from the functions which were executed in
+broadcast fashion on the slave nodes.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">The order of the outputs in the returned list should not be relied upon. Any master program which needs to know which slave node returned which data must have the slave node ID returned from the broadcast task along with the wanted (payload) data.</p>
+</div>
+<div class="section" id="example">
+<h3>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h3>
+<p>A slave program:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!/usr/bin/env python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot; This program will generate a random number between 1 and 100</span>
+<span class="sd">whenever get_random is called() &quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">cluster</span>
+<span class="kn">import</span> <span class="nn">hashlib</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">random</span>
+
+<span class="kn">from</span> <span class="nn">cluster_slave_headers</span> <span class="kn">import</span> <span class="o">*</span>
+
+
+<span class="c"># Define how the slave program should set it&#39;s self up</span>
+<span class="k">def</span> <span class="nf">slave_init</span><span class="p">(</span><span class="n">net_iface</span><span class="p">,</span> <span class="n">ns_ip</span><span class="p">,</span> <span class="n">node_id</span><span class="p">):</span>
+        <span class="n">cluster</span><span class="o">.</span><span class="n">network_init</span><span class="p">(</span><span class="n">net_iface</span><span class="p">,</span><span class="n">ns_ip</span><span class="p">,</span><span class="n">node_id</span><span class="p">)</span>
+        <span class="c">#Hook any other initialization methods here</span>
+
+<span class="c"># BEGINNING OF SHARED FUNCTION DEFINITIONS</span>
+
+<span class="k">def</span> <span class="nf">get_random</span><span class="p">():</span>
+        <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">100</span><span class="p">)</span>
+
+<span class="n">slave_tasks_list</span><span class="p">[</span><span class="s">&#39;get_random&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_random</span>
+
+<span class="c"># END OF SHARED FUNCTION DEFINITIONS</span>
+</pre></div>
+</div>
+<p>A master program:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!/usr/bin/env python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">cluster</span>
+<span class="kn">import</span> <span class="nn">hashlib</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+
+<span class="c">#Initialize the task scheduler</span>
+<span class="n">cluster</span><span class="o">.</span><span class="n">round_robin_init</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="c">#Do a broadcast task</span>
+<span class="n">procs</span> <span class="o">=</span> <span class="n">cluster</span><span class="o">.</span><span class="n">broadcast_task</span><span class="p">(</span><span class="s">&#39;get_random&#39;</span><span class="p">)</span>
+
+<span class="c">#Wait for it to finish</span>
+<span class="n">cluster</span><span class="o">.</span><span class="n">wait_for_broadcast_task</span><span class="p">(</span><span class="n">procs</span><span class="p">)</span>
+
+<span class="c">#Display the output</span>
+<span class="k">print</span> <span class="n">cluster</span><span class="o">.</span><span class="n">broadcast_task_get_data</span><span class="p">(</span><span class="n">procs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Would (for example, random numbers will vary) output:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[</span><span class="mi">31</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">45</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="moving-large-datasets-with-variableserver-and-variableclient">
+<h2>Moving large datasets with VariableServer and VariableClient<a class="headerlink" href="#moving-large-datasets-with-variableserver-and-variableclient" title="Permalink to this headline">¶</a></h2>
+<p>When moving small pieces of data, such as short strings or integers,
+between nodes using this API, it is common and acceptable practice to
+either pass them as parameters to a function or read them as return
+values from a function. This methodology can, however, be too slow
+for transferring larger pieces of data, such as long lists. In this
+case, it is better for the function wishing to send the variable to run
+a VariableServer and the node receiving the data can run a
+VariableClient. The link to the data is passed between nodes by
+traditional means such as a function return value or an argument to a
+function. VariableClients are created by calling the
+<tt class="xref py py-func docutils literal"><span class="pre">cluster.VariableClient()</span></tt> constructor with no arguments and
+VariableServers are created by calling the
+<tt class="xref py py-func docutils literal"><span class="pre">cluster.VariableServer()</span></tt> constructor with the IP address facing
+the cluster as its only argument. Calling
+<tt class="xref py py-func docutils literal"><span class="pre">VariableServer.serve_var()</span></tt> with the variable to be sent as its
+only argument will return a link to that variable. Calling
+<tt class="xref py py-func docutils literal"><span class="pre">VariableClient.download_var()</span></tt> with the previously mentioned link
+as its only parameter will return the variable that is being served.
+Once the download is complete the variable will no longer be served.</p>
+<p>The following example shows how a long list is traditionally passed
+between nodes. This is the slow method. During tests, it took
+approximately 47 seconds to run on a single node Raspberry Pi model B.</p>
+<p>A master program:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!/usr/bin/env python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">cluster</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+
+<span class="c"># Begin timing the task</span>
+<span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+<span class="n">iface_ip</span> <span class="o">=</span> <span class="n">cluster</span><span class="o">.</span><span class="n">network_init</span><span class="p">(</span><span class="s">&quot;eth0&quot;</span><span class="p">,</span> <span class="s">&quot;192.168.137.100&quot;</span><span class="p">,</span> <span class="s">&quot;99&quot;</span><span class="p">)</span>
+
+<span class="c">#Initialize the task scheduler</span>
+<span class="n">CLUSTER_SIZE</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">cluster</span><span class="o">.</span><span class="n">round_robin_init</span><span class="p">(</span><span class="n">CLUSTER_SIZE</span><span class="p">)</span>
+
+<span class="n">emp_node</span> <span class="o">=</span> <span class="n">cluster</span><span class="o">.</span><span class="n">concurrent_task</span><span class="p">(</span><span class="s">&#39;give_list&#39;</span><span class="p">,</span><span class="s">&#39;t_1&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&quot;Task has been started&quot;</span>
+<span class="k">print</span> <span class="s">&quot;Waiting for task to finish&quot;</span>
+<span class="n">cluster</span><span class="o">.</span><span class="n">wait_for_task</span><span class="p">(</span><span class="s">&#39;t_1&#39;</span><span class="p">,</span><span class="n">emp_node</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&quot;Task is finished&quot;</span>
+<span class="n">rand_list</span> <span class="o">=</span> <span class="n">cluster</span><span class="o">.</span><span class="n">get_output_from_task</span><span class="p">(</span><span class="s">&#39;t_1&#39;</span><span class="p">,</span><span class="n">emp_node</span><span class="p">)</span>
+
+<span class="c">#Cleanup</span>
+<span class="n">cluster</span><span class="o">.</span><span class="n">cleanup_concurrent_task</span><span class="p">(</span><span class="s">&#39;t_1&#39;</span><span class="p">,</span><span class="n">emp_node</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="n">rand_list</span>
+
+<span class="k">print</span> <span class="s">&quot;Time to run program: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>A slave program:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!/usr/bin/env python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">cluster</span>
+<span class="kn">import</span> <span class="nn">random</span>
+
+<span class="kn">from</span> <span class="nn">cluster_slave_headers</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="c">#Global variable which will become the object representing the VariableServer</span>
+<span class="n">var_srv</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+
+<span class="c"># Define how the slave program should set it&#39;s self up</span>
+<span class="k">def</span> <span class="nf">slave_init</span><span class="p">(</span><span class="n">net_iface</span><span class="p">,</span> <span class="n">ns_ip</span><span class="p">,</span> <span class="n">node_id</span><span class="p">):</span>
+        <span class="n">slave_interface_info</span><span class="p">[</span><span class="s">&#39;ip&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cluster</span><span class="o">.</span><span class="n">network_init</span><span class="p">(</span><span class="n">net_iface</span><span class="p">,</span><span class="n">ns_ip</span><span class="p">,</span><span class="n">node_id</span><span class="p">)</span>
+        <span class="c">#Hook any other initialization methods here</span>
+
+
+<span class="c"># BEGINNING OF SHARED FUNCTION DEFINITIONS</span>
+
+<span class="k">def</span> <span class="nf">give_list</span><span class="p">():</span>
+        <span class="n">rand_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">250000</span><span class="p">):</span>
+                <span class="n">rand_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">100</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">rand_list</span>
+
+
+<span class="c"># These functions must be made available to the API</span>
+
+<span class="n">slave_tasks_list</span><span class="p">[</span><span class="s">&#39;give_list&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">give_list</span>
+
+<span class="c"># END OF SHARED FUNCTION DEFINITIONS</span>
+</pre></div>
+</div>
+<p>The following example shows how the same task can be accomplished much
+quicker using a VariableServer and a VariableClient. During tests, it took
+approximately 19 seconds to run on a single node Raspberry Pi model B.</p>
+<p>A master program:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!/usr/bin/env python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">cluster</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+
+<span class="c"># Begin timing the task</span>
+<span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+<span class="n">iface_ip</span> <span class="o">=</span> <span class="n">cluster</span><span class="o">.</span><span class="n">network_init</span><span class="p">(</span><span class="s">&quot;eth0&quot;</span><span class="p">,</span> <span class="s">&quot;192.168.137.100&quot;</span><span class="p">,</span> <span class="s">&quot;99&quot;</span><span class="p">)</span>
+<span class="c"># Create a variable client for the receiving of large datasets</span>
+<span class="n">variable_client</span> <span class="o">=</span> <span class="n">cluster</span><span class="o">.</span><span class="n">VariableClient</span><span class="p">()</span>
+
+<span class="c">#Initialize the task scheduler</span>
+<span class="n">CLUSTER_SIZE</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">cluster</span><span class="o">.</span><span class="n">round_robin_init</span><span class="p">(</span><span class="n">CLUSTER_SIZE</span><span class="p">)</span>
+
+<span class="n">emp_node</span> <span class="o">=</span> <span class="n">cluster</span><span class="o">.</span><span class="n">concurrent_task</span><span class="p">(</span><span class="s">&#39;give_list&#39;</span><span class="p">,</span><span class="s">&#39;t_1&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&quot;Task has been started&quot;</span>
+<span class="k">print</span> <span class="s">&quot;Waiting for task to finish&quot;</span>
+<span class="n">cluster</span><span class="o">.</span><span class="n">wait_for_task</span><span class="p">(</span><span class="s">&#39;t_1&#39;</span><span class="p">,</span><span class="n">emp_node</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&quot;Task is finished&quot;</span>
+<span class="n">rand_list_link</span> <span class="o">=</span> <span class="n">cluster</span><span class="o">.</span><span class="n">get_output_from_task</span><span class="p">(</span><span class="s">&#39;t_1&#39;</span><span class="p">,</span><span class="n">emp_node</span><span class="p">)</span>
+<span class="n">rand_list</span> <span class="o">=</span> <span class="n">variable_client</span><span class="o">.</span><span class="n">download_var</span><span class="p">(</span><span class="n">rand_list_link</span><span class="p">)</span>
+
+<span class="c">#Cleanup</span>
+<span class="n">cluster</span><span class="o">.</span><span class="n">cleanup_concurrent_task</span><span class="p">(</span><span class="s">&#39;t_1&#39;</span><span class="p">,</span><span class="n">emp_node</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="n">rand_list</span>
+
+<span class="k">print</span> <span class="s">&quot;Time to run program: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>A slave program:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!/usr/bin/env python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">cluster</span>
+<span class="kn">import</span> <span class="nn">random</span>
+
+<span class="kn">from</span> <span class="nn">cluster_slave_headers</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="c">#Global variable which will become the object representing the VariableServer</span>
+<span class="n">var_srv</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+
+<span class="c"># Define how the slave program should set it&#39;s self up</span>
+<span class="k">def</span> <span class="nf">slave_init</span><span class="p">(</span><span class="n">net_iface</span><span class="p">,</span> <span class="n">ns_ip</span><span class="p">,</span> <span class="n">node_id</span><span class="p">):</span>
+        <span class="n">slave_interface_info</span><span class="p">[</span><span class="s">&#39;ip&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cluster</span><span class="o">.</span><span class="n">network_init</span><span class="p">(</span><span class="n">net_iface</span><span class="p">,</span><span class="n">ns_ip</span><span class="p">,</span><span class="n">node_id</span><span class="p">)</span>
+        <span class="c">#Hook any other initialization methods here --- Create the VariableServer</span>
+        <span class="k">global</span> <span class="n">var_srv</span>
+        <span class="n">var_srv</span> <span class="o">=</span> <span class="n">cluster</span><span class="o">.</span><span class="n">VariableServer</span><span class="p">(</span><span class="n">slave_interface_info</span><span class="p">[</span><span class="s">&#39;ip&#39;</span><span class="p">])</span>
+
+
+<span class="c"># BEGINNING OF SHARED FUNCTION DEFINITIONS</span>
+
+<span class="k">def</span> <span class="nf">give_list</span><span class="p">():</span>
+        <span class="n">rand_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">250000</span><span class="p">):</span>
+                <span class="n">rand_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">100</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">var_srv</span><span class="o">.</span><span class="n">serve_var</span><span class="p">(</span><span class="n">rand_list</span><span class="p">)</span>
+
+
+<span class="c"># These functions must be made available to the API</span>
+
+<span class="n">slave_tasks_list</span><span class="p">[</span><span class="s">&#39;give_list&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">give_list</span>
+
+<span class="c"># END OF SHARED FUNCTION DEFINITIONS</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Writing the master (front-end) program</a><ul>
+<li><a class="reference internal" href="#setup">Setup</a></li>
+<li><a class="reference internal" href="#sequential-tasks">Sequential Tasks</a></li>
+<li><a class="reference internal" href="#concurrent-tasks">Concurrent Tasks</a></li>
+<li><a class="reference internal" href="#concurrent-tasks-with-files">Concurrent Tasks with files</a></li>
+<li><a class="reference internal" href="#longtasks">LongTasks</a><ul>
+<li><a class="reference internal" href="#non-communicating-longtasks">Non-Communicating LongTasks</a></li>
+<li><a class="reference internal" href="#communicating-longtasks">Communicating LongTasks</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#broadcast-tasks">Broadcast Tasks</a><ul>
+<li><a class="reference internal" href="#example">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#moving-large-datasets-with-variableserver-and-variableclient">Moving large datasets with VariableServer and VariableClient</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="slave_program.html"
+                        title="previous chapter">Writing the slave (back-end) program</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="cluster_deployment.html"
+                        title="next chapter">Cluster Deployment</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/master_program.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="cluster_deployment.html" title="Cluster Deployment"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="slave_program.html" title="Writing the slave (back-end) program"
+             >previous</a> |</li>
+        <li><a href="index.html">DCM - Distributed Computing Middleware 0.01 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, UOIT DNA Lab.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

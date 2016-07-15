@@ -1,0 +1,275 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Writing the slave (back-end) program &mdash; DCM - Distributed Computing Middleware 0.01 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.01',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="top" title="DCM - Distributed Computing Middleware 0.01 documentation" href="index.html" />
+    <link rel="next" title="Writing the master (front-end) program" href="master_program.html" />
+    <link rel="prev" title="About the API" href="about.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="master_program.html" title="Writing the master (front-end) program"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="about.html" title="About the API"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">DCM - Distributed Computing Middleware 0.01 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="writing-the-slave-back-end-program">
+<h1>Writing the slave (back-end) program<a class="headerlink" href="#writing-the-slave-back-end-program" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul class="simple">
+</ul>
+</div>
+<div class="section" id="setup">
+<h2>Setup<a class="headerlink" href="#setup" title="Permalink to this headline">¶</a></h2>
+<p>All slave programs must begin by importing <tt class="xref py py-mod docutils literal"><span class="pre">cluster</span></tt> into its own
+namespace and importing <tt class="xref py py-mod docutils literal"><span class="pre">cluster_slave_headers</span></tt> into the global namespace.</p>
+<p>The first few lines of the slave program should look like this.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!/usr/bin/env python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="kn">import</span> <span class="nn">cluster</span>
+<span class="kn">from</span> <span class="nn">cluster_slave_headers</span> <span class="kn">import</span> <span class="o">*</span>
+</pre></div>
+</div>
+<p>After this, the <tt class="xref py py-func docutils literal"><span class="pre">slave_init()</span></tt> function must be defined. The default
+one is as follows.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Define how the slave program should set itself up</span>
+<span class="k">def</span> <span class="nf">slave_init</span><span class="p">(</span><span class="n">net_iface</span><span class="p">,</span> <span class="n">ns_ip</span><span class="p">,</span> <span class="n">node_id</span><span class="p">):</span>
+        <span class="n">cluster</span><span class="o">.</span><span class="n">network_init</span><span class="p">(</span><span class="n">net_iface</span><span class="p">,</span><span class="n">ns_ip</span><span class="p">,</span><span class="n">node_id</span><span class="p">)</span>
+        <span class="c">#Hook any other initialization methods here</span>
+</pre></div>
+</div>
+<p>This is the template initialization function for all distributed
+programs using this API. Append any lines of code to this function that
+you wish to be executed in order to setup the slave program.</p>
+</div>
+<div class="section" id="distributed-functions">
+<h2>Distributed Functions<a class="headerlink" href="#distributed-functions" title="Permalink to this headline">¶</a></h2>
+<p>Define a function to do work in the exact same way you would if the
+function were running in a series processing program. After this, make
+it available to the distributed computing API by adding it to the
+<tt class="xref py py-data docutils literal"><span class="pre">slave_tasks_list</span></tt> dictionary with the key set to the function name and
+the value set to a reference to the function.</p>
+<p>Here is an example of a simple function being made available to the
+distributed computing API.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="sd">&quot;&quot;&quot; Simple function that says hello and an appropriate message</span>
+<span class="sd">given the time of day &quot;&quot;&quot;</span>
+<span class="k">def</span> <span class="nf">say_hello</span><span class="p">(</span><span class="n">person_name</span><span class="p">,</span> <span class="n">time_of_day</span><span class="p">):</span>
+        <span class="n">greeting_str</span> <span class="o">=</span> <span class="s">&quot;Hello &quot;</span> <span class="o">+</span> <span class="n">person_name</span> <span class="o">+</span> <span class="s">&quot;.&quot;</span>
+        <span class="k">if</span> <span class="n">time_of_day</span> <span class="o">&lt;</span> <span class="mi">12</span><span class="p">:</span>
+                <span class="n">greeting_str</span> <span class="o">+=</span> <span class="s">&quot; Good morning.&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+                <span class="n">greeting_str</span> <span class="o">+=</span> <span class="s">&quot; Good afternoon.&quot;</span>
+
+        <span class="k">print</span> <span class="s">&quot;WORKING saying: &quot;</span> <span class="o">+</span> <span class="n">greeting_str</span> <span class="c">#Useful for debugging</span>
+        <span class="k">return</span> <span class="n">greeting_str</span>
+
+<span class="c"># This function must be made available to the API</span>
+<span class="n">slave_tasks_list</span><span class="p">[</span><span class="s">&#39;say_hello&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">say_hello</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="example">
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
+<p>Here is an example of a very simple slave program. The next section will
+focus on writing a master program to use the functionality of the slave
+program.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!/usr/bin/env python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="kn">import</span> <span class="nn">cluster</span>
+<span class="kn">from</span> <span class="nn">cluster_slave_headers</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="c"># Define how the slave program should set itself up</span>
+<span class="k">def</span> <span class="nf">slave_init</span><span class="p">(</span><span class="n">net_iface</span><span class="p">,</span> <span class="n">ns_ip</span><span class="p">,</span> <span class="n">node_id</span><span class="p">):</span>
+        <span class="n">cluster</span><span class="o">.</span><span class="n">network_init</span><span class="p">(</span><span class="n">net_iface</span><span class="p">,</span><span class="n">ns_ip</span><span class="p">,</span><span class="n">node_id</span><span class="p">)</span>
+        <span class="c">#Hook any other initialization methods here</span>
+
+<span class="sd">&quot;&quot;&quot; Simple function that says hello and an appropriate message</span>
+<span class="sd">given the time of day &quot;&quot;&quot;</span>
+<span class="k">def</span> <span class="nf">say_hello</span><span class="p">(</span><span class="n">person_name</span><span class="p">,</span> <span class="n">time_of_day</span><span class="p">):</span>
+        <span class="n">greeting_str</span> <span class="o">=</span> <span class="s">&quot;Hello &quot;</span> <span class="o">+</span> <span class="n">person_name</span> <span class="o">+</span> <span class="s">&quot;.&quot;</span>
+        <span class="k">if</span> <span class="n">time_of_day</span> <span class="o">&lt;</span> <span class="mi">12</span><span class="p">:</span>
+                <span class="n">greeting_str</span> <span class="o">+=</span> <span class="s">&quot; Good morning.&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+                <span class="n">greeting_str</span> <span class="o">+=</span> <span class="s">&quot; Good afternoon.&quot;</span>
+
+        <span class="k">print</span> <span class="s">&quot;WORKING saying: &quot;</span> <span class="o">+</span> <span class="n">greeting_str</span> <span class="c">#Useful for debugging</span>
+        <span class="k">return</span> <span class="n">greeting_str</span>
+
+<span class="c"># This function must be made available to the API</span>
+<span class="n">slave_tasks_list</span><span class="p">[</span><span class="s">&#39;say_hello&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">say_hello</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="longtasks">
+<h2>LongTasks<a class="headerlink" href="#longtasks" title="Permalink to this headline">¶</a></h2>
+<p>A LongTask is a task where multiple slave process are working to solve a
+common problem and it is not known which one will be the first to obtain
+a solution. This is useful for implementing brute-force algorithms.</p>
+<p>The key to implementing a LongTask is defining it in as many subroutines
+as possible. For example, here is the code to solve a partial sha512
+hash collision without parallelization.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">hash_collide</span><span class="p">(</span><span class="n">problem_string</span><span class="p">,</span><span class="n">n_zeros</span><span class="p">):</span>
+        <span class="k">while</span> <span class="p">((</span><span class="n">hashlib</span><span class="o">.</span><span class="n">sha512</span><span class="p">(</span><span class="n">problem_string</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">())[</span><span class="mi">0</span><span class="p">:</span><span class="n">n_zeros</span><span class="p">]</span> <span class="o">!=</span> <span class="s">&#39;0&#39;</span><span class="o">*</span><span class="n">n_zeros</span><span class="p">):</span>
+                <span class="n">problem_string</span> <span class="o">=</span> <span class="n">problem_string</span> <span class="o">+</span> <span class="s">&#39;a&#39;</span>
+        <span class="k">return</span> <span class="n">problem_string</span>
+</pre></div>
+</div>
+<p>The same task, implemented for parallel deployment can be written as
+follows.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">hash_collide</span><span class="p">(</span><span class="n">hashCollider</span><span class="p">,</span><span class="n">problem_string</span><span class="p">,</span><span class="n">n_zeros</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s">&quot;WORKING to solve: &quot;</span> <span class="o">+</span> <span class="n">problem_string</span> <span class="c">#Useful for debugging</span>
+        <span class="n">hashCollider</span><span class="o">.</span><span class="n">set_var</span><span class="p">(</span><span class="s">&#39;problem_string&#39;</span><span class="p">,</span><span class="n">problem_string</span><span class="p">)</span>
+        <span class="k">while</span> <span class="p">((</span><span class="n">hashlib</span><span class="o">.</span><span class="n">sha512</span><span class="p">(</span><span class="n">hashCollider</span><span class="o">.</span><span class="n">get_var</span><span class="p">(</span><span class="s">&#39;problem_string&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">())[</span><span class="mi">0</span><span class="p">:</span><span class="n">n_zeros</span><span class="p">]</span> <span class="o">!=</span> <span class="s">&#39;0&#39;</span><span class="o">*</span><span class="n">n_zeros</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">hashCollider</span><span class="o">.</span><span class="n">run_task</span><span class="p">(</span><span class="s">&#39;hash_collide_part_0001&#39;</span><span class="p">):</span> <span class="c"># +++ Added a breakpoint here</span>
+                        <span class="k">return</span> <span class="bp">None</span>
+        <span class="n">hashCollider</span><span class="o">.</span><span class="n">cluster_return</span><span class="p">(</span><span class="n">hashCollider</span><span class="o">.</span><span class="n">get_var</span><span class="p">(</span><span class="s">&#39;problem_string&#39;</span><span class="p">))</span> <span class="c"># Use cluster_return instead of return</span>
+
+<span class="k">def</span> <span class="nf">hash_collide_part_0001</span><span class="p">(</span><span class="n">hashCollider</span><span class="p">):</span>
+        <span class="n">problem_string</span> <span class="o">=</span> <span class="n">hashCollider</span><span class="o">.</span><span class="n">get_var</span><span class="p">(</span><span class="s">&#39;problem_string&#39;</span><span class="p">)</span> <span class="c"># +++ Get the variable</span>
+        <span class="n">problem_string</span> <span class="o">=</span> <span class="n">problem_string</span> <span class="o">+</span> <span class="s">&#39;a&#39;</span>                  <span class="c"># The subtask has now been wrapped</span>
+        <span class="n">hashCollider</span><span class="o">.</span><span class="n">set_var</span><span class="p">(</span><span class="s">&#39;problem_string&#39;</span><span class="p">,</span><span class="n">problem_string</span><span class="p">)</span>   <span class="c"># +++ Put the variable back once it&#39;s been modified</span>
+</pre></div>
+</div>
+<p>All subroutines in the LongTask must take the parallel processing object
+which they are working on as their first parameter. All other parameters
+are the regular parameters for the function. Variables are created or
+modified using the <tt class="xref py py-func docutils literal"><span class="pre">parallel_processing_object.set_var()</span></tt> method
+with the first argument being the name of the variable and the second
+argument being its value. Variables are retrieved from the parallel
+processing object by calling <tt class="xref py py-func docutils literal"><span class="pre">parallel_processing_object.get_var()</span></tt>
+with the first and only argument being the name of the variable to get.
+The value of this variable is returned. Subroutines are called by
+calling <tt class="xref py py-func docutils literal"><span class="pre">parallel_processing_object.run_task()</span></tt> and checking what
+this method returns. If it returns <tt class="docutils literal"><span class="pre">True</span></tt> the LongTask must finish,
+thus the &#8220;if&#8221; statement in the previous example.</p>
+<p>A function in the slave program, which builds the parallel processing
+object, must be defined. This function must build an object of class
+<tt class="xref py py-class docutils literal"><span class="pre">cluster.LongTask</span></tt>, add all the subroutines which it will use,
+set its main task and possibly setup <strong>master communication</strong>. Finally,
+this function must be made available to the API by adding it to the
+dictionary <tt class="xref py py-data docutils literal"><span class="pre">slave_longtask_classes</span></tt>.</p>
+<p>The following code example defines (and exports to the API) a function
+which will build a parallel processing object which will attempt to
+solve a partial hash collision and will
+stop when instructed to do so.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">build_talking_hashCollider</span><span class="p">():</span>
+        <span class="n">talkingHashCollider</span> <span class="o">=</span> <span class="n">cluster</span><span class="o">.</span><span class="n">LongTask</span><span class="p">()</span>
+        <span class="n">talkingHashCollider</span><span class="o">.</span><span class="n">add_task</span><span class="p">(</span><span class="s">&#39;hash_collide&#39;</span><span class="p">,</span><span class="n">hash_collide</span><span class="p">)</span>
+        <span class="n">talkingHashCollider</span><span class="o">.</span><span class="n">add_task</span><span class="p">(</span><span class="s">&#39;hash_collide_part_0001&#39;</span><span class="p">,</span><span class="n">hash_collide_part_0001</span><span class="p">)</span>
+        <span class="n">talkingHashCollider</span><span class="o">.</span><span class="n">set_main_task</span><span class="p">(</span><span class="s">&#39;hash_collide&#39;</span><span class="p">)</span>
+        <span class="c">#Make it communicate</span>
+        <span class="n">talkingHashCollider</span><span class="o">.</span><span class="n">enable_master_comm</span><span class="p">()</span>
+        <span class="n">talkingHashCollider</span><span class="o">.</span><span class="n">set_master_server</span><span class="p">(</span><span class="s">&quot;PyroMaster&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">talkingHashCollider</span>
+
+<span class="n">slave_longtask_classes</span><span class="p">[</span><span class="s">&#39;talkingHashCollider&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">build_talking_hashCollider</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Writing the slave (back-end) program</a><ul>
+<li><a class="reference internal" href="#setup">Setup</a></li>
+<li><a class="reference internal" href="#distributed-functions">Distributed Functions</a></li>
+<li><a class="reference internal" href="#example">Example</a></li>
+<li><a class="reference internal" href="#longtasks">LongTasks</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="about.html"
+                        title="previous chapter">About the API</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="master_program.html"
+                        title="next chapter">Writing the master (front-end) program</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/slave_program.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="master_program.html" title="Writing the master (front-end) program"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="about.html" title="About the API"
+             >previous</a> |</li>
+        <li><a href="index.html">DCM - Distributed Computing Middleware 0.01 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, UOIT DNA Lab.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

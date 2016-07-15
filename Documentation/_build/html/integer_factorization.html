@@ -1,0 +1,377 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Integer Factorization &mdash; DCM - Distributed Computing Middleware 0.01 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.01',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="top" title="DCM - Distributed Computing Middleware 0.01 documentation" href="index.html" />
+    <link rel="up" title="Benchmarking" href="benchmarking.html" />
+    <link rel="next" title="Word Count (Hadoop Comparison)" href="word_count.html" />
+    <link rel="prev" title="Benchmarking" href="benchmarking.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="word_count.html" title="Word Count (Hadoop Comparison)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="benchmarking.html" title="Benchmarking"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">DCM - Distributed Computing Middleware 0.01 documentation</a> &raquo;</li>
+          <li><a href="benchmarking.html" accesskey="U">Benchmarking</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="integer-factorization">
+<h1>Integer Factorization<a class="headerlink" href="#integer-factorization" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul class="simple">
+</ul>
+</div>
+<div class="section" id="single-laptop">
+<h2>Single Laptop<a class="headerlink" href="#single-laptop" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="specifications">
+<h3>Specifications:<a class="headerlink" href="#specifications" title="Permalink to this headline">¶</a></h3>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">OS:</th><td class="field-body">Debian Wheezy 7.5 64-bit, GNOME, Linux Kernel 3.2.0-4-amd64</td>
+</tr>
+<tr class="field-even field"><th class="field-name">PC Model:</th><td class="field-body">HP Compaq tc4400</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Memory:</th><td class="field-body">2.0GB</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Processor:</th><td class="field-body">Intel Core 2 CPU T7200 &#64; 2.00GHz x 2</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Python Version:</th><td class="field-body">2.7.3</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="test">
+<h3>Test:<a class="headerlink" href="#test" title="Permalink to this headline">¶</a></h3>
+<p>The time was recorded for how long it would take to find all the
+non-trivial factors of 425,432,980.</p>
+</div>
+<div class="section" id="results">
+<h3>Results:<a class="headerlink" href="#results" title="Permalink to this headline">¶</a></h3>
+<p>The time to compute the factorization was 38 seconds with one process.
+Once additional processes were added the computation time stayed
+relatively constant at around 19 seconds.</p>
+<div class="figure">
+<img alt="_images/singleNode.png" src="_images/singleNode.png" />
+</div>
+</div>
+</div>
+<div class="section" id="single-raspberry-pi">
+<h2>Single Raspberry Pi<a class="headerlink" href="#single-raspberry-pi" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id1">
+<h3>Specifications:<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">OS:</th><td class="field-body">Raspbian Wheezy (2014-06-20)</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Installed Packages (Raspbian):</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body">python-pip, python2.7-dev</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Installed Packages (Python):</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">Pyro4, netifaces</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Hardware:</th><td class="field-body">Raspberry Pi Model B</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="id2">
+<h3>Test:<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p>The time was recorded for how long it would take to find all the
+non-trivial factors of 425,432,980.</p>
+</div>
+<div class="section" id="id3">
+<h3>Results:<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<p>The time to compute the factorization stayed at approximately 390
+seconds regardless of how many processes were solving the problem.</p>
+<div class="figure">
+<img alt="_images/singlePiNode.png" src="_images/singlePiNode.png" />
+</div>
+</div>
+</div>
+<div class="section" id="raspberry-pi-cluster">
+<h2>Raspberry Pi Cluster<a class="headerlink" href="#raspberry-pi-cluster" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id4">
+<h3>Specifications:<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">OS:</th><td class="field-body">Raspbian Wheezy (2014-06-20)</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Installed Packages (Raspbian):</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body">python-pip, python2.7-dev</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Installed Packages (Python):</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">Pyro4, netifaces</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Hardware:</th><td class="field-body">Raspberry Pi Model B</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="id5">
+<h3>Test:<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<p>The time was recorded for how long it would take to find all the
+non-trivial factors of 425,432,980.</p>
+</div>
+<div class="section" id="id6">
+<h3>Results:<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<p>The time to solve the problem could be estimated by the formula
+<math xmlns="http://www.w3.org/1998/Math/MathML">
+<mrow><mi>t</mi><mo>=</mo><mn>3</mn><mn>8</mn><mn>6</mn><mo>/</mo><mi>n</mi></mrow></math> where <math xmlns="http://www.w3.org/1998/Math/MathML">
+<mrow><mi>t</mi></mrow></math> is the time, in seconds, to solve
+the problem and <math xmlns="http://www.w3.org/1998/Math/MathML">
+<mrow><mi>n</mi></mrow></math> is the number of Raspberry Pi nodes working to
+solve the problem.</p>
+<div class="figure">
+<img alt="_images/multiPiNode.png" src="_images/multiPiNode.png" />
+</div>
+</div>
+</div>
+<div class="section" id="source-code">
+<h2>Source Code<a class="headerlink" href="#source-code" title="Permalink to this headline">¶</a></h2>
+<p>slave_program.py</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!/usr/bin/env python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">cluster</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="kn">from</span> <span class="nn">cluster_slave_headers</span> <span class="kn">import</span> <span class="o">*</span>
+
+
+<span class="c"># Define how the slave program should set it&#39;s self up</span>
+<span class="k">def</span> <span class="nf">slave_init</span><span class="p">(</span><span class="n">net_iface</span><span class="p">,</span> <span class="n">ns_ip</span><span class="p">,</span> <span class="n">node_id</span><span class="p">):</span>
+        <span class="n">cluster</span><span class="o">.</span><span class="n">network_init</span><span class="p">(</span><span class="n">net_iface</span><span class="p">,</span><span class="n">ns_ip</span><span class="p">,</span><span class="n">node_id</span><span class="p">)</span>
+        <span class="c">#Hook any other initialization methods here</span>
+
+<span class="c"># BEGINNING OF SHARED FUNCTION DEFINITIONS</span>
+
+
+
+<span class="sd">&quot;&quot;&quot; Factor search must be able to handle large numbers without</span>
+<span class="sd">using too much RAM causing MemoryErrors. Therefore range() must not be</span>
+<span class="sd">used &quot;&quot;&quot;</span>
+
+<span class="k">def</span> <span class="nf">factor_search</span><span class="p">(</span><span class="n">beginning</span><span class="p">,</span><span class="n">end</span><span class="p">,</span><span class="n">comp_num</span><span class="p">):</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="n">beginning</span>
+        <span class="n">factors</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">end</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">comp_num</span> <span class="o">%</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="c">#We have found a factor</span>
+                        <span class="n">factors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">factors</span>
+
+<span class="c"># This function must be made available to the API</span>
+
+<span class="n">slave_tasks_list</span><span class="p">[</span><span class="s">&#39;factor_search&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">factor_search</span>
+
+<span class="c"># END OF SHARED FUNCTION DEFINITIONS</span>
+</pre></div>
+</div>
+<p>master_program.py</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!/usr/bin/env python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">cluster</span>
+<span class="kn">import</span> <span class="nn">hashlib</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">math</span>
+
+
+<span class="k">def</span> <span class="nf">factor_list_empty</span><span class="p">(</span><span class="n">lst</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">lst</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">i</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">return</span> <span class="bp">True</span>
+
+
+<span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+
+<span class="c">#Initialize the task scheduler</span>
+<span class="n">CLUSTER_SIZE</span> <span class="o">=</span> <span class="mi">4</span> <span class="c">#Set to number of worker processes in the cluster.</span>
+<span class="n">cluster</span><span class="o">.</span><span class="n">round_robin_init</span><span class="p">(</span><span class="n">CLUSTER_SIZE</span><span class="p">)</span>
+
+<span class="n">composite_number</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="k">print</span> <span class="s">&quot;Finding non-trivial factors of &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">composite_number</span><span class="p">)</span>
+
+<span class="n">chunk_size</span> <span class="o">=</span> <span class="p">((</span><span class="n">composite_number</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="n">CLUSTER_SIZE</span>
+<span class="k">print</span> <span class="s">&quot;Calculated chunk_size: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">chunk_size</span><span class="p">)</span>
+<span class="c"># Avoid a chunk size of zero</span>
+<span class="k">if</span> <span class="n">chunk_size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">chunk_size</span> <span class="o">=</span> <span class="mi">1</span>
+
+
+<span class="c">#create the work list for each node</span>
+<span class="n">i</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">work_list</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">while</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="n">composite_number</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">tmp_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">tmp_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="n">i</span> <span class="o">+=</span> <span class="n">chunk_size</span>
+        <span class="n">tmp_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">work_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tmp_list</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="n">work_list</span>
+
+<span class="n">factors_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+
+<span class="n">task_count</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">emp_nodes</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">work_list</span><span class="p">:</span>
+        <span class="n">task_count</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">emp_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cluster</span><span class="o">.</span><span class="n">concurrent_task</span><span class="p">(</span><span class="s">&#39;factor_search&#39;</span><span class="p">,</span><span class="s">&#39;t_&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">task_count</span><span class="p">),</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">i</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="n">composite_number</span><span class="p">))</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">task_count</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">cluster</span><span class="o">.</span><span class="n">wait_for_task</span><span class="p">(</span><span class="s">&#39;t_&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">),</span><span class="n">emp_nodes</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">factors_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cluster</span><span class="o">.</span><span class="n">get_output_from_task</span><span class="p">(</span><span class="s">&#39;t_&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">),</span><span class="n">emp_nodes</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+
+
+<span class="k">print</span> <span class="s">&quot;Non trivial factors of &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">composite_number</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot; are...&quot;</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">factors_list</span><span class="p">)):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">factors_list</span><span class="p">[</span><span class="n">i</span><span class="p">])):</span>
+                <span class="k">print</span> <span class="n">factors_list</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span>
+
+<span class="k">if</span> <span class="n">factor_list_empty</span><span class="p">(</span><span class="n">factors_list</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s">&quot;...none. &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">composite_number</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot; is prime.&quot;</span>
+
+<span class="n">delta_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+
+<span class="k">print</span> <span class="s">&quot;This factorization took &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">delta_time</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot; seconds.&quot;</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Integer Factorization</a><ul>
+<li><a class="reference internal" href="#single-laptop">Single Laptop</a><ul>
+<li><a class="reference internal" href="#specifications">Specifications:</a></li>
+<li><a class="reference internal" href="#test">Test:</a></li>
+<li><a class="reference internal" href="#results">Results:</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#single-raspberry-pi">Single Raspberry Pi</a><ul>
+<li><a class="reference internal" href="#id1">Specifications:</a></li>
+<li><a class="reference internal" href="#id2">Test:</a></li>
+<li><a class="reference internal" href="#id3">Results:</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#raspberry-pi-cluster">Raspberry Pi Cluster</a><ul>
+<li><a class="reference internal" href="#id4">Specifications:</a></li>
+<li><a class="reference internal" href="#id5">Test:</a></li>
+<li><a class="reference internal" href="#id6">Results:</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#source-code">Source Code</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="benchmarking.html"
+                        title="previous chapter">Benchmarking</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="word_count.html"
+                        title="next chapter">Word Count (Hadoop Comparison)</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/integer_factorization.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="word_count.html" title="Word Count (Hadoop Comparison)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="benchmarking.html" title="Benchmarking"
+             >previous</a> |</li>
+        <li><a href="index.html">DCM - Distributed Computing Middleware 0.01 documentation</a> &raquo;</li>
+          <li><a href="benchmarking.html" >Benchmarking</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, UOIT DNA Lab.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>
